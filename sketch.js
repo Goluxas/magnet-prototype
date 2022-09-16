@@ -5,7 +5,9 @@ function setup() {
   //canvasHeight = windowHeight * 0.95;
   canvasWidth = windowWidth;
   canvasHeight = windowHeight;
-  createCanvas(canvasWidth, canvasHeight);
+  let canvas = createCanvas(canvasWidth, canvasHeight);
+  // blocks the context menu on right click
+  canvas.elt.addEventListener("contextmenu", (e) => e.preventDefault());
 
   player = {
     x: canvasWidth / 2,
