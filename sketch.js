@@ -15,6 +15,10 @@ function setup() {
     y: canvasHeight / 2,
     size: 20,
     speed: 5.0,
+    contact_acceleration: 1.0,
+    gravity: 5.0,
+    dx: 0,
+    dy: 0,
   }
 
   contact_points = generate_contact_points();
@@ -36,7 +40,13 @@ function draw() {
 
   let mouse_vector = createVector(mouseX, mouseY);
   let nearest_contact = find_nearest_contact_point(mouse_vector);
-  propel(nearest_contact);
+
+  let acceleration = {dx: player.dx, dy: player.dy};
+  if (mouseIsPressed) {
+    acceleration = propel(nearest_contact, player.dx, player.dy);
+  }
+
+  move(player, acceleration.dx, acceleration.dy);
 
   // contact points
   stroke(0, 0, 200);
@@ -54,11 +64,24 @@ function draw() {
   circle(player.x, player.y, player.size);
 }
 
-function propel(contact_point) {
-  // moves toward/away from the contact point closest to the mouse
-  if (!mouseIsPressed) {
-    return;
-  }
+function move(actor, dx, dy) {
+  // Moves an actor (like the player) by dx and dy and updates their acceleration
+  actor.x += dx;
+  actor.y += dy;
+  actor.dx = dx;
+  actor.dy = dy;
+}
+
+function propel(contact_point, dx, dy) {
+  /* Accelerates toward/away from the contact point closest to the mouse
+
+  Arguments:
+    contact_point (Vector): The point toward which to accelerate
+    dx, dy (float): The previous values of dx and dy
+  
+  Returns:
+    dx, dy (float): The current acceleration in each direction
+  */
 
   // vector movement time!
   let player_vector = createVector(player.x, player.y);
@@ -83,11 +106,10 @@ function propel(contact_point) {
     // now how to suppress the context menu?
   }
 
-  let dx = player.speed * Math.cos(angle);
-  let dy = player.speed * Math.sin(angle);
+  dx += player.contact_acceleration * Math.cos(angle);
+  dy += player.contact_acceleration * Math.sin(angle);
 
-  player.x += dx;
-  player.y += dy;
+  return {dx: dx, dy: dy};
 }
 
 function find_nearest_contact_point(source_vector) {
