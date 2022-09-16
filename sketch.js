@@ -34,7 +34,9 @@ function generate_contact_points(n = 5) {
 function draw() {
   background(220);
 
-  propel();
+  let mouse_vector = createVector(mouseX, mouseY);
+  let nearest_contact = find_nearest_contact_point(mouse_vector);
+  propel(nearest_contact);
 
   // contact points
   stroke(0, 0, 200);
@@ -43,28 +45,25 @@ function draw() {
     circle(point.x, point.y, 5);
   }
 
-  // draw influence line
+  // draw influence line to contact point
   stroke(0, 0, 200);
-  line(player.x, player.y, mouseX, mouseY);
+  line(player.x, player.y, nearest_contact.x, nearest_contact.y);
 
   // player
   fill(255);
   circle(player.x, player.y, player.size);
 }
 
-function propel() {
+function propel(contact_point) {
   // moves toward/away from the contact point closest to the mouse
   if (!mouseIsPressed) {
     return;
   }
 
   // vector movement time!
-  player_vector = createVector(player.x, player.y);
-  mouse_vector = createVector(mouseX, mouseY);
+  let player_vector = createVector(player.x, player.y);
 
-  let nearest = find_nearest_contact_point(mouse_vector);
-
-  move_vector = p5.Vector.sub(player_vector, nearest);
+  let move_vector = p5.Vector.sub(player_vector, contact_point);
 
   // using p5's angleBetween
   //angle = move_vector.angleBetween(createVector(1,0));
@@ -72,7 +71,7 @@ function propel() {
   // not sure why atan2 works but this doesn't
 
   // using atan2
-  angle = Math.atan2(move_vector.y, move_vector.x);
+  let angle = Math.atan2(move_vector.y, move_vector.x);
 
   // if right click, attract instead of repel
   if (mouseButton == RIGHT) {
@@ -84,8 +83,8 @@ function propel() {
     // now how to suppress the context menu?
   }
 
-  dx = player.speed * Math.cos(angle);
-  dy = player.speed * Math.sin(angle);
+  let dx = player.speed * Math.cos(angle);
+  let dy = player.speed * Math.sin(angle);
 
   player.x += dx;
   player.y += dy;
