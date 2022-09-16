@@ -1,4 +1,5 @@
 let player;
+let contact_points;
 
 function setup() {
   //canvasWidth = windowWidth * 0.95;
@@ -15,6 +16,19 @@ function setup() {
     size: 20,
     speed: 5.0,
   }
+
+  contact_points = generate_contact_points();
+}
+
+function generate_contact_points(n = 5) {
+  // Creates n randomly placed contact points on the map
+  let points = new Array();
+  for (let i = 0; i < n; i++) {
+    point = createVector(random(0, canvasWidth), random(0, canvasHeight));
+    points.push(point);
+  }
+
+  return points;
 }
 
 function draw() {
@@ -22,9 +36,18 @@ function draw() {
 
   propel();
 
+  // contact points
+  stroke(0, 0, 200);
+  fill(0, 0, 200);
+  for (const point of contact_points) {
+    circle(point.x, point.y, 5);
+  }
+
+  // draw influence line
   stroke(0, 0, 200);
   line(player.x, player.y, mouseX, mouseY);
 
+  // player
   fill(255);
   circle(player.x, player.y, player.size);
 }
