@@ -53,6 +53,7 @@ function draw() {
 }
 
 function propel() {
+  // moves toward/away from the contact point closest to the mouse
   if (!mouseIsPressed) {
     return;
   }
@@ -61,7 +62,9 @@ function propel() {
   player_vector = createVector(player.x, player.y);
   mouse_vector = createVector(mouseX, mouseY);
 
-  move_vector = p5.Vector.sub(player_vector, mouse_vector);
+  let nearest = find_nearest_contact_point(mouse_vector);
+
+  move_vector = p5.Vector.sub(player_vector, nearest);
 
   // using p5's angleBetween
   //angle = move_vector.angleBetween(createVector(1,0));
@@ -86,4 +89,22 @@ function propel() {
 
   player.x += dx;
   player.y += dy;
+}
+
+function find_nearest_contact_point(source_vector) {
+  let min_distance = Number.MAX_SAFE_INTEGER;
+  let closest;
+
+  for (const point of contact_points) {
+    let dist_vector = p5.Vector.sub(source_vector, point);
+    // faster than mag() and we don't care because we're just comparing
+    let dist = dist_vector.magSq();
+
+    if (dist < min_distance) {
+      min_distance = dist;
+      closest = point.copy();
+    }
+  }
+
+  return closest;
 }
