@@ -46,6 +46,16 @@ function propel() {
   // using atan2
   angle = Math.atan2(move_vector.y, move_vector.x);
 
+  // if right click, attract instead of repel
+  if (mouseButton == RIGHT) {
+    // NOTE: interesting! this makes it attract on y-axis but still repel on x-axis
+    // angle *= -1;
+    // maybe if i subtract pi radians instead?
+    angle -= Math.PI;
+    // that did it
+    // now how to suppress the context menu?
+  }
+
   dx = player.speed * Math.cos(angle);
   dy = player.speed * Math.sin(angle);
 
